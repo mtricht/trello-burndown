@@ -1,0 +1,199 @@
+package backend
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"regexp"
+	"strconv"
+	"time"
+
+	"github.com/jasonlvhit/gocron"
+	"github.com/spf13/viper"
+)
+
+type board struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	URL   string `json:"url"`
+	Lists []list `json:"lists"`
+	Cards []card `json:"cards"`
+}
+
+type list struct {
+	ID       string `json:"id"`
+	Position int    `json:"pos"`
+}
+
+type card struct {
+	ID               string `json:"id"`
+	ListID           string `json:"idList"`
+	Name             string `json:"name"`
+	DateLastActivity string `json:"dateLastActivity"`
+	Actions          *[]action
+}
+
+type action struct {
+	Data struct {
+		ListAfter struct {
+			ListID string `json:"id"`
+		}
+		ListBefore struct {
+			ListID string `json:"id"`
+		}
+	}
+	Date string `json:"date"`
+}
+
+type cardResult struct {
+	Error    error
+	Date     string
+	Complete bool
+	Points   float64
+}
+
+func Start() {
+	go runBoards()
+	ch := gocron.Start()
+	gocron.Every(30).Minutes().Do(runBoards)
+	<-ch
+}
+
+func runBoards() {
+	Run("bCm0jVbE")
+}
+
+func Run(boardID string) {
+	log.Printf("Checking board ID #%s", boardID)
+	board, err := getBoard(boardID)
+	log.Printf("Board name: %s", board.Name)
+	lastListID := getLastList(board)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	resultChannel := make(chan *cardResult)
+	for _, card := range board.Cards {
+		go determineCardComplete(card, lastListID, resultChannel)
+	}
+	var cardsTotal, cardsCompleted int
+	var pointsTotal, pointsCompleted float64
+	var m = make(map[string]float64)
+	for i := 0; i < len(board.Cards); i++ {
+		response := <-resultChannel
+		if response.Error != nil {
+			log.Fatalln(response.Error)
+		}
+		if response.Complete {
+			cardsCompleted++
+			pointsCompleted += response.Points
+			m[response.Date] += response.Points
+		}
+		cardsTotal++
+		pointsTotal += response.Points
+	}
+	log.Printf("Cards progress: %d/%d", cardsCompleted, cardsTotal)
+	log.Printf("Total points: %f/%f", pointsCompleted, pointsTotal)
+	// TODO: Save to database.
+}
+
+func getBoard(id string) (*board, error) {
+	url := fmt.Sprintf(
+		"https://api.trello.com/1/boards/%s?key=%s&token=%s&cards=visible&lists=all",
+		id,
+		viper.GetString("trello.apiKey"),
+		viper.GetString("trello.userToken"),
+	)
+	resp, err := http.Get(url)
+	defer resp.Body.Close()
+	if err != nil {
+		return &board{}, err
+	}
+	r := new(board)
+	err = json.NewDecoder(resp.Body).Decode(r)
+	if err != nil {
+		return &board{}, err
+	}
+	return r, nil
+}
+
+func getLastList(board *board) string {
+	var highestPos int
+	var listID string
+	for _, list := range board.Lists {
+		if list.Position > highestPos {
+			listID = list.ID
+		}
+	}
+	return listID
+}
+
+func determineCardComplete(card card, listID string, res chan *cardResult) {
+	points := getPoints(&card)
+	if card.ListID != listID {
+		res <- &cardResult{
+			Complete: false,
+			Points:   points,
+		}
+	}
+	url := fmt.Sprintf(
+		"https://api.trello.com/1/cards/%s/actions?key=%s&token=%s",
+		card.ID,
+		viper.GetString("trello.apiKey"),
+		viper.GetString("trello.userToken"),
+	)
+	resp, err := http.Get(url)
+	defer resp.Body.Close()
+	if err != nil {
+		res <- &cardResult{
+			Error: err,
+		}
+		return
+	}
+	var actions []action
+	err = json.NewDecoder(resp.Body).Decode(&actions)
+	if err != nil {
+		res <- &cardResult{
+			Error: err,
+		}
+		return
+	}
+	date, err := time.Parse(time.RFC3339Nano, card.DateLastActivity)
+	if err != nil {
+		res <- &cardResult{
+			Error: err,
+		}
+		return
+	}
+	for _, action := range actions {
+		if action.Data.ListAfter.ListID != action.Data.ListBefore.ListID &&
+			action.Data.ListAfter.ListID == listID {
+			date, err = time.Parse(time.RFC3339Nano, action.Date)
+			if err != nil {
+				res <- &cardResult{
+					Error: err,
+				}
+				return
+			}
+			break
+		}
+	}
+	res <- &cardResult{
+		Complete: true,
+		Date:     date.Format("2006-01-02"),
+		Points:   points,
+	}
+}
+
+func getPoints(card *card) float64 {
+	r := regexp.MustCompile(`\(([0-9]*\.[0-9]+|[0-9]+)\)`)
+	matches := r.FindStringSubmatch(card.Name)
+	if len(matches) != 2 {
+		return 0
+	}
+	points, err := strconv.ParseFloat(matches[1], 64)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return points
+}
