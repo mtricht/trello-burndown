@@ -14,11 +14,15 @@ import (
 )
 
 type board struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	URL   string `json:"url"`
-	Lists []list `json:"lists"`
-	Cards []card `json:"cards"`
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	URL             string `json:"url"`
+	Lists           []list `json:"lists"`
+	Cards           []card `json:"cards"`
+	CardsCompleted  uint
+	CardsTotal      uint
+	PointsCompleted float64
+	PointsTotal     float64
 }
 
 type list struct {
@@ -76,8 +80,6 @@ func Run(boardID string) {
 	for _, card := range board.Cards {
 		go determineCardComplete(card, lastListID, resultChannel)
 	}
-	var cardsTotal, cardsCompleted int
-	var pointsTotal, pointsCompleted float64
 	var m = make(map[string]float64)
 	for i := 0; i < len(board.Cards); i++ {
 		response := <-resultChannel
@@ -85,16 +87,16 @@ func Run(boardID string) {
 			log.Fatalln(response.Error)
 		}
 		if response.Complete {
-			cardsCompleted++
-			pointsCompleted += response.Points
+			board.CardsCompleted++
+			board.PointsCompleted += response.Points
 			m[response.Date] += response.Points
 		}
-		cardsTotal++
-		pointsTotal += response.Points
+		board.CardsTotal++
+		board.PointsTotal += response.Points
 	}
-	log.Printf("Cards progress: %d/%d", cardsCompleted, cardsTotal)
-	log.Printf("Total points: %f/%f", pointsCompleted, pointsTotal)
-	// TODO: Save to database.
+	log.Printf("Cards progress: %d/%d", board.CardsCompleted, board.CardsTotal)
+	log.Printf("Total points: %f/%f", board.PointsCompleted, board.PointsTotal)
+	saveToDatabase(board, m)
 }
 
 func getBoard(id string) (*board, error) {
