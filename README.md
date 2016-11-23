@@ -2,10 +2,22 @@
 An easy to use trello burndown chart.
 
 ### Screenshots
-Soon
+![view](screenshots/view.png)
+![add](screenshots/add.png)
+![index](screenshots/index.png)
 
 ### Assumptions
-Follows soon
+
+- The points must be present in the title between paranthesis like so: `(2) Add login page`
+- The last column of the board is where finished cards are found.
 
 ### Installation
-Follows soon
+Soon™
+
+### TODO
+
+- [ ] Add Dockerfile
+- [ ] Add installation guide
+- [ ] Release binary with gox, see [MailHog](https://github.com/mailhog/MailHog/blob/master/Makefile) for an example.
+- [ ] Ignore weekends
+- [ ] Add ability to edit a trello board
