@@ -17,6 +17,7 @@ type Board struct {
 	Points          float64
 	CardsCompleted  uint
 	PointsCompleted float64
+	CardProgress    []CardProgress
 }
 
 type CardProgress struct {
@@ -38,8 +39,9 @@ func GetDatabase() *gorm.DB {
 func saveToDatabase(board *board, m map[string]float64) {
 	db := GetDatabase()
 	defer db.Close()
-	db.Save(&Board{
-		ID:              board.ID,
+	oldBoard := Board{}
+	db.Where("id = ?", board.ID).First(&oldBoard)
+	db.Model(oldBoard).Updates(&Board{
 		Name:            board.Name,
 		Cards:           board.CardsTotal,
 		Points:          board.PointsTotal,
@@ -52,8 +54,9 @@ func saveToDatabase(board *board, m map[string]float64) {
 	for date, points := range m {
 		date, _ := time.Parse("2006-01-02", date)
 		db.Save(&CardProgress{
-			Date:   date,
-			Points: points,
+			Date:    date,
+			Points:  points,
+			BoardID: board.ID,
 		})
 	}
 }

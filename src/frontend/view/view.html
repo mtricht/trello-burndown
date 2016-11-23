@@ -1,0 +1,62 @@
+{{ define "view" }}
+  {{ template "header" }}
+  <p><a href=".."><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back to index</a></p>
+  <div width="200px" height="200px">
+    <canvas id="burndownChart"></canvas>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+  <script>
+    var ctx = document.getElementById("burndownChart");
+    var totalPoints = {{ .Board.Points }};
+    var pointsSpentPerDay = [
+      {{- range .Board.CardProgress -}}
+        {{ .Points }},
+      {{- end -}}
+    ];
+    var days = [
+      {{- range .Dates -}}
+        "{{ .Format "2006-01-02" }}",
+      {{- end -}}
+    ];
+    var burndownChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: days,
+        datasets: [
+          {
+            fill: true,
+            backgroundColor: "rgba(75,192,192,0.2)",
+            label: 'Estimated',
+            data: getEstimatedData(),
+          },
+          {
+            fill: true,
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            label: 'Actual',
+            data: getActualData(),
+          }
+        ]
+      },
+    });
+    function getEstimatedData() {
+      estimated = [];
+      perDay = totalPoints / days.length;
+      tempTotal = totalPoints;
+      for (i = 0; i < days.length; i++) {
+        estimated[i] = tempTotal - perDay;
+        tempTotal = tempTotal - perDay;
+      }
+      return estimated;
+    }
+    function getActualData() {
+      actual = [];
+      tempTotal = totalPoints;
+      for (i = 0; i < pointsSpentPerDay.length; i++) {
+        actual[i] = tempTotal - pointsSpentPerDay[i];
+        tempTotal = tempTotal - pointsSpentPerDay[i];
+      }
+      return actual;
+    }
+  </script>
+  {{ template "footer" }}
+{{ end }}

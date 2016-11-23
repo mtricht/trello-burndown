@@ -60,17 +60,25 @@ type cardResult struct {
 func Start() {
 	go runBoards()
 	ch := gocron.Start()
-	gocron.Every(30).Minutes().Do(runBoards)
+	refreshRate := uint64(viper.GetInt64("trello.refreshRate"))
+	gocron.Every(refreshRate).Minutes().Do(runBoards)
 	<-ch
 }
 
 func runBoards() {
-	Run("bCm0jVbE")
+	db := GetDatabase()
+	defer db.Close()
+	boards := []board{}
+	db.Select("id").Find(&boards)
+	for _, board := range boards {
+		go Run(board.ID)
+	}
 }
 
 func Run(boardID string) {
 	log.Printf("Checking board ID #%s", boardID)
 	board, err := getBoard(boardID)
+	board.ID = boardID
 	log.Printf("Board name: %s", board.Name)
 	lastListID := getLastList(board)
 	if err != nil {
@@ -89,7 +97,11 @@ func Run(boardID string) {
 		if response.Complete {
 			board.CardsCompleted++
 			board.PointsCompleted += response.Points
-			m[response.Date] += response.Points
+			if _, ok := m[response.Date]; ok {
+				m[response.Date] = response.Points + m[response.Date]
+			} else {
+				m[response.Date] = response.Points
+			}
 		}
 		board.CardsTotal++
 		board.PointsTotal += response.Points
@@ -137,6 +149,7 @@ func determineCardComplete(card card, listID string, res chan *cardResult) {
 			Complete: false,
 			Points:   points,
 		}
+		return
 	}
 	url := fmt.Sprintf(
 		"https://api.trello.com/1/cards/%s/actions?key=%s&token=%s",

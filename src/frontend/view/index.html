@@ -1,0 +1,30 @@
+{{ define "index" }}
+  {{ template "header" }}
+  <p><a href="add"><i class="fa fa-plus"></i> Add trello board</a></p>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th></th>
+      <th>Board name</th>
+      <th>Start date</th>
+      <th>End date</th>
+      <th>Cards<br />Completed / Total</th>
+      <th>Points<br />Completed / Total</th>
+      <th>Actions</th>
+    </tr>
+    {{ range .}}
+      <tr>
+        <td><a href="view/{{ .ID }}"><i class="fa fa-line-chart" aria-hidden="true"></i></a></td>
+        <td>{{ .Name }}</td>
+        <td>{{ .DateStart.Format "02-01-2006" }}</td>
+        <td>{{ .DateEnd.Format "02-01-2006" }}</td>
+        <td>{{ .CardsCompleted }} / {{ .Cards }}</td>
+        <td>{{ .PointsCompleted }} / {{ .Points }}</td>
+        <td>
+          <!--<a href="edit/{{ .ID }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>-->
+          <a href="delete/{{ .ID }}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        </td>
+      </tr>  
+    {{ end }}
+  </table>
+  {{ template "footer" }}
+{{ end }}

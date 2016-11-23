@@ -1,0 +1,20 @@
+{{ define "add" }}
+  {{ template "header" }}
+  <p><a href=".."><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back to index</a></p>
+  <form method="post">
+    <div class="form-group">
+      <label for="id">Board ID</label>
+      <input type="text" class="form-control" id="id" name="id" placeholder="Board ID">
+    </div>
+    <div class="form-group">
+      <label for="start_date">Start date</label>
+      <input type="date" class="form-control" id="start_date" name="start_date">
+    </div>
+    <div class="form-group">
+      <label for="end_date">End date</label>
+      <input type="date" class="form-control" id="end_date" name="end_date">
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+  </form>
+  {{ template "footer" }}
+{{ end }}
