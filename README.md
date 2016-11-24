@@ -2,13 +2,13 @@
 An easy to use trello burndown chart.
 
 ### Screenshots
-**Viewing a burndown chart**
+### Viewing a burndown chart
 ![view](screenshots/view.png)
 
-**Adding a trello board**
+#### Adding a trello board
 ![add](screenshots/add.png)
 
-**Index page with table of trello boards**
+#### Index page with table of trello boards
 ![index](screenshots/index.png)
 
 ### Assumptions
