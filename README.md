@@ -2,8 +2,11 @@
 An easy to use trello burndown chart.
 
 ### Screenshots
+**Viewing a burndown chart**
 ![view](screenshots/view.png)
+**Adding a trello board**
 ![add](screenshots/add.png)
+**Index page with table of trello boards*
 ![index](screenshots/index.png)
 
 ### Assumptions
@@ -16,6 +19,7 @@ Soon™
 
 ### TODO
 
+- [ ] Only import active trello boards
 - [ ] Add Dockerfile
 - [ ] Add installation guide
 - [ ] Release binary with gox, see [MailHog](https://github.com/mailhog/MailHog/blob/master/Makefile) for an example.
