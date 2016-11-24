@@ -2,7 +2,8 @@
 An easy to use trello burndown chart.
 
 ### Screenshots
-### Viewing a burndown chart
+
+#### Viewing a burndown chart
 ![view](screenshots/view.png)
 
 #### Adding a trello board
