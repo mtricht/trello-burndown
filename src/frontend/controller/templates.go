@@ -1,13 +1,8 @@
 package controller
 
 import (
-	"html/template"
-	"os"
-	"path/filepath"
+	"github.com/itsjamie/go-bindata-templates"
+	"github.com/swordbeta/trello-burndown/assets"
 )
 
-var basePath, _ = os.Getwd()
-var viewPath = filepath.Join(basePath, "src", "frontend", "view")
-var templates = template.Must(template.ParseGlob(
-	filepath.Join(viewPath, "*"),
-))
+var templates, err = binhtml.New(assets.Asset, assets.AssetDir).LoadDirectory("assets")

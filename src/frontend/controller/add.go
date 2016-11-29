@@ -9,7 +9,7 @@ import (
 
 // AddGet renders the form to add a trello board.
 func AddGet(w http.ResponseWriter, r *http.Request) {
-	err := templates.ExecuteTemplate(w, "add", nil)
+	err = templates.ExecuteTemplate(w, "add", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
