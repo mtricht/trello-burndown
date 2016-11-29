@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"github.com/swordbeta/trello-burndown/src/backend"
+	"github.com/swordbeta/trello-burndown/src/util"
 )
 
 type viewPage struct {
@@ -27,7 +29,9 @@ func getViewPage(r *http.Request) *viewPage {
 	db := backend.GetDatabase()
 	defer db.Close()
 	board := backend.Board{}
-	db.Preload("CardProgress").Where("id = ?", vars["board"]).First(&board)
+	db.Preload("CardProgress", func(db *gorm.DB) *gorm.DB {
+		return db.Order("date ASC")
+	}).Where("id = ?", vars["board"]).First(&board)
 	return &viewPage{
 		Board: board,
 		Dates: getDatesBetween(board.DateStart, board.DateEnd),
@@ -36,14 +40,17 @@ func getViewPage(r *http.Request) *viewPage {
 
 func getDatesBetween(start time.Time, end time.Time) []time.Time {
 	delta := int(end.Sub(start).Hours())
-	dates := make([]time.Time, (delta/24)+1)
-	index := 1
-	dates[0] = start
-	for delta != 0 {
+	var dates []time.Time
+	dates = append(dates, start)
+	for index := 0; index <= delta; index++ {
 		date, _ := time.Parse("2006-01-02", start.Format("2006-01-02"))
-		dates[index] = date.Add(time.Hour * 24 * time.Duration(index))
-		index++
+		date = date.Add(time.Hour * 24 * time.Duration(index))
 		delta -= 24
+		if util.IsWeekend(date) {
+			continue
+		}
+		dates = append(dates, date)
 	}
+	dates = append(dates, end)
 	return dates
 }

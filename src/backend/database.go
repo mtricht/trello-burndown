@@ -6,6 +6,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/swordbeta/trello-burndown/src/util"
 )
 
 type Board struct {
@@ -51,12 +52,18 @@ func saveToDatabase(board *board, m map[string]float64) {
 	db.Delete(&CardProgress{
 		BoardID: board.ID,
 	})
+	pointsInWeekend := 0.0
 	for date, points := range m {
 		date, _ := time.Parse("2006-01-02", date)
+		if util.IsWeekend(date) {
+			pointsInWeekend += points
+			continue
+		}
 		db.Save(&CardProgress{
 			Date:    date,
-			Points:  points,
+			Points:  points + pointsInWeekend,
 			BoardID: board.ID,
 		})
+		pointsInWeekend = 0
 	}
 }
