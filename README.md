@@ -24,7 +24,7 @@ Soon™
 
 - [X] Only import active trello boards
 - [X] Ignore weekends
-- [ ] Add Dockerfile
+- [X] Add Dockerfile
 - [ ] Add installation guide
 - [ ] Release binary with gox, see [MailHog](https://github.com/mailhog/MailHog/blob/master/Makefile) for an example.
 - [ ] Add ability to edit a trello board
