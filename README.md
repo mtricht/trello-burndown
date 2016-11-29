@@ -25,7 +25,7 @@ An easy to use trello burndown chart.
 3. Generate a token by visiting the following URL:
 `https://trello.com/1/authorize?name=trello-burndown&expiration=never&response_type=token&key=DEVELOPER_API_KEY`.
 Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
-4. Write both the Developer API key and the generated token down, you will need this to properly configure the application.
+4. Write both the Developer API key and the generated token down, you will need these to configure the application.
 
 #### Setup & Running
 1. Clone the repository
@@ -49,7 +49,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 4. Build & run with docker
 
     ```
-    docker build -t trello-burndown . && docker run --rm -p 8080:8080 --name trello-burndown trello-burndown
+    λ docker build -t trello-burndown . && docker run --rm -p 8080:8080 --name trello-burndown trello-burndown
     ```
 
 ### TODO
