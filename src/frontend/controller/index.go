@@ -12,7 +12,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	boards := []backend.Board{}
 	db.Order("date_start desc").Find(&boards)
-	err = templates.ExecuteTemplate(w, "index", boards)
+	err := templates.ExecuteTemplate(w, "index", boards)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
