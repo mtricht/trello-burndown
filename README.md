@@ -22,7 +22,7 @@ Soon™
 
 ### TODO
 
-- [ ] Only import active trello boards
+- [X] Only import active trello boards
 - [ ] Add Dockerfile
 - [ ] Add installation guide
 - [ ] Release binary with gox, see [MailHog](https://github.com/mailhog/MailHog/blob/master/Makefile) for an example.

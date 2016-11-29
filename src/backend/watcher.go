@@ -69,7 +69,8 @@ func runBoards() {
 	db := GetDatabase()
 	defer db.Close()
 	boards := []board{}
-	db.Select("id").Find(&boards)
+	yesterday := time.Now().Add(-24 * time.Hour)
+	db.Select("id").Where("date_start < ? AND date_end > ?", yesterday, yesterday).Find(&boards)
 	for _, board := range boards {
 		go Run(board.ID)
 	}
