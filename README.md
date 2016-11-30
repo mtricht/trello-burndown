@@ -1,6 +1,8 @@
 # trello-burndown
 An easy to use trello burndown chart.
 
+Get quickly up and runnning with the [docker image](#docker-setup--running) or [binary](#binary-setup--running). Or check [how it works](#how-it-works).
+
 ### Screenshots
 
 #### Viewing a burndown chart
@@ -12,10 +14,11 @@ An easy to use trello burndown chart.
 #### Index page with table of trello boards
 ![index](screenshots/index.png)
 
-### Assumptions
+### How it works
 
 - The points must be present in the title between parenthesis like so: `(2) Add login page`
 - The last column of the board is where finished cards are found.
+- Weekends are ignored. Points that were completed in the weekend are appointed to the next monday.
 
 ### Installation
 
@@ -50,7 +53,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 1. Download the latest release from [here](https://github.com/swordbeta/trello-burndown/releases).
 2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/swordbeta/trello-burndown/blob/master/config.yaml.default).
 3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
-4. Run it! You could run this as a daemon with upstart/supervisord/systemctl/etc.
+4. Run it! You could run this as a daemon with upstart/supervisord/systemd/etc.
 
     ```
     λ ./trello-burndown
