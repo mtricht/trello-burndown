@@ -27,12 +27,28 @@ An easy to use trello burndown chart.
 Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 4. Write both the Developer API key and the generated token down, you will need these to configure the application.
 
-#### Setup & Running
+#### Docker: Setup & Running
+1. Create a new directory to store the configuration and Sqlite3 database.
+
+    ```
+    λ mkdir trello-burndown && cd trello-burndown
+    ```
+
+2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/swordbeta/trello-burndown/blob/master/config.yaml.default).
+3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
+4. Run it! (The config file must be present in the /root directory inside the docker container.)
+
+    ```
+    λ docker run -d -p 8080:8080 --volume $(pwd):/root/ swordbeta/trello-burndown:v1.0.0
+    ```
+
+#### Binary: Setup & Running
 1. Download the latest release from [here](https://github.com/swordbeta/trello-burndown/releases).
 2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/swordbeta/trello-burndown/blob/master/config.yaml.default).
 3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
-4. Run it! You could run this as a daemon with upstart/supervisord/systemctl/etc. (Docker image on dockerhub coming soon™)
+4. Run it! You could run this as a daemon with upstart/supervisord/systemctl/etc.
 
     ```
     λ ./trello-burndown
     ```
+    
