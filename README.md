@@ -51,8 +51,3 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
     ```
     λ docker build -t trello-burndown . && docker run --rm -p 8080:8080 --name trello-burndown trello-burndown
     ```
-
-### TODO
-
-- [ ] Release binaries wit `gox`
-- [ ] Publish on dockerhub
