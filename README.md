@@ -28,26 +28,11 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 4. Write both the Developer API key and the generated token down, you will need these to configure the application.
 
 #### Setup & Running
-1. Clone the repository
-
-    ```
-    λ git clone git@github.com:swordbeta/trello-burndown.git && cd trello-burndown
-    ```
-    
-2. Copy the default configuration
-
-    ```
-    λ cp config.yaml.default config.yaml
-    ```
-    
+1. Download the latest release from [here](https://github.com/swordbeta/trello-burndown/releases).
+2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/swordbeta/trello-burndown/blob/master/config.yaml.default).
 3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
+4. Run it! You could run this as a daemon with upstart/supervisord/systemctl/etc. (Docker image on dockerhub coming soon™)
 
     ```
-    λ vim config.yaml
-    ```
-    
-4. Build & run with docker
-
-    ```
-    λ docker build -t trello-burndown . && docker run --rm -p 8080:8080 --name trello-burndown trello-burndown
+    λ ./trello-burndown
     ```
