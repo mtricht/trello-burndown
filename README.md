@@ -28,7 +28,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 4. Write both the Developer API key and the generated token down, you will need these to configure the application.
 
 #### Docker: Setup & Running
-1. Create a new directory to store the configuration and Sqlite3 database.
+1. Create a new directory to store the configuration and SQLite3 database.
 
     ```
     λ mkdir trello-burndown && cd trello-burndown
