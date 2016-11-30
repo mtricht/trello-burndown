@@ -1,6 +1,6 @@
 {{ define "view" }}
   {{ template "header" }}
-  <p><a href=".."><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back to index</a></p>
+  <p><a href="{{ .BaseURL }}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back to index</a></p>
   <div width="200px" height="200px">
     <canvas id="burndownChart"></canvas>
   </div>

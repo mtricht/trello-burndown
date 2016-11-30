@@ -6,13 +6,15 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"github.com/spf13/viper"
 	"github.com/swordbeta/trello-burndown/src/backend"
 	"github.com/swordbeta/trello-burndown/src/util"
 )
 
 type viewPage struct {
-	Board backend.Board
-	Dates []time.Time
+	Board   backend.Board
+	Dates   []time.Time
+	BaseURL string
 }
 
 // View renders the burndown chart!
@@ -33,8 +35,9 @@ func getViewPage(r *http.Request) *viewPage {
 		return db.Order("date ASC")
 	}).Where("id = ?", vars["board"]).First(&board)
 	return &viewPage{
-		Board: board,
-		Dates: getDatesBetween(board.DateStart, board.DateEnd),
+		Board:   board,
+		Dates:   getDatesBetween(board.DateStart, board.DateEnd),
+		BaseURL: viper.GetString("http.baseURL"),
 	}
 }
 

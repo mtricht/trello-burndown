@@ -1,7 +1,8 @@
 debug: false
 trello:
-    apiKey: See README on how to get the api key
-    userToken: See README on how to get the user token
+    apiKey: # See README on how to get the api key
+    userToken: # See README on how to get the user token
     refreshRate: 30 # minutes
 http:
     port: 8080
+    baseURL: http://localhost:8080/ # With trailing slash
