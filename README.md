@@ -1,4 +1,6 @@
 # trello-burndown
+[![Go Report Card](https://goreportcard.com/badge/github.com/swordbeta/trello-burndown)](https://goreportcard.com/report/github.com/swordbeta/trello-burndown)
+
 An easy to use trello burndown chart.
 
 Get quickly up and runnning with the [docker image](#docker-setup--running) or [binary](#binary-setup--running). Or check [how it works](#how-it-works).
