@@ -35,5 +35,5 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		DateEnd:   endDate,
 	})
 	backend.Run(r.FormValue("id"))
-	http.Redirect(w, r, viper.GetString("http.baseURL")+"index", 301)
+	http.Redirect(w, r, viper.GetString("http.baseURL")+"index", 302)
 }
