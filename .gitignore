@@ -26,4 +26,3 @@ _testmain.go
 trello.db
 config.yaml
 build/*
-assets/views.go
