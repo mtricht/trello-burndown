@@ -38,13 +38,13 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
 4. Run it!
 
-    Note 1: The config file must be present in the /root directory inside the docker container.
-
-    Note 2: `:Z` is required on systems with SELinux. 
-
     ```
     λ docker run -d -p 8080:8080 --volume $(pwd):/root/:Z swordbeta/trello-burndown:v1.0.0
     ```
+    
+    Note 1: The config file must be present in the /root directory inside the docker container.
+
+    Note 2: `:Z` is required on systems with SELinux. 
 
 #### Binary: Setup & Running
 1. Download the latest release from [here](https://github.com/swordbeta/trello-burndown/releases).
