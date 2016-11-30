@@ -3,7 +3,13 @@
 
 An easy to use trello burndown chart.
 
-Get quickly up and runnning with the [docker image](#docker-setup--running) or [binary](#binary-setup--running). Or check [how it works](#how-it-works).
+Get quickly up and runnning with the [docker image](#docker-setup--running) or [binary](#binary-setup--running).
+
+### How it works
+
+- The points must be present in the title between parenthesis like so: `(2) Add login page`
+- The last column of the board is where finished cards are found.
+- Weekends are ignored. Points that were completed in the weekend are appointed to the next monday.
 
 ### Screenshots
 
@@ -15,12 +21,6 @@ Get quickly up and runnning with the [docker image](#docker-setup--running) or [
 
 #### Index page with table of trello boards
 ![index](screenshots/index.png)
-
-### How it works
-
-- The points must be present in the title between parenthesis like so: `(2) Add login page`
-- The last column of the board is where finished cards are found.
-- Weekends are ignored. Points that were completed in the weekend are appointed to the next monday.
 
 ### Installation
 
