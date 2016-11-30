@@ -8,7 +8,7 @@ build: bindata
 bindata:
 	go-bindata -o assets/views.go -pkg assets assets/...
 
-docker: bindata
-	docker build -t trello-burndown .
+docker:
+	docker build --no-cache -t trello-burndown .
 
 .PNONY: install build bindata docker
