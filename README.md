@@ -44,7 +44,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 4. Run it!
 
     ```
-    λ docker run -d -p 8080:8080 --volume $(pwd):/root:Z swordbeta/trello-burndown:v1.0.0
+    λ docker run -d -p 8080:8080 --volume $(pwd):/root:Z swordbeta/trello-burndown:latest
     ```
     
     Note 1: The config file must be present in the /root directory inside the docker container.
