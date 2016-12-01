@@ -8,11 +8,11 @@
   <script>
     var ctx = document.getElementById("burndownChart");
     var totalPoints = {{ .Board.Points }};
-    var pointsSpentPerDay = [
+    var pointsSpentPerDay = {
       {{- range .Board.CardProgress -}}
-        {{ .Points }},
+        {{ .Date.Format "2006-01-02" }}: {{ .Points }},
       {{- end -}}
-    ];
+    };
     var days = [
       {{- range .Dates -}}
         "{{ .Format "2006-01-02" }}",
@@ -51,11 +51,22 @@
     function getActualData() {
       actual = [];
       tempTotal = totalPoints;
-      for (i = 0; i < pointsSpentPerDay.length; i++) {
-        actual[i] = tempTotal - pointsSpentPerDay[i];
-        tempTotal = tempTotal - pointsSpentPerDay[i];
+      for (i = 0; i < days.length; i++) {
+        pointsTemp = pointsSpentPerDay[days[i]] || 0;
+        actual[i] = tempTotal - pointsTemp;
+        tempTotal = tempTotal - pointsTemp;
+        if (isToday(days[i])) {
+          break;
+        }
       }
       return actual;
+    }
+    function isToday(date) {
+      var dateObj = new Date();
+      var month = dateObj.getUTCMonth() + 1;
+      var day = ('0' + dateObj.getUTCDate()).slice(-2);
+      var year = dateObj.getUTCFullYear();
+      return date == year + "-" + month + "-" + day;
     }
   </script>
   {{ template "footer" }}

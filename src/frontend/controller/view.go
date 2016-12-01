@@ -44,7 +44,6 @@ func getViewPage(r *http.Request) *viewPage {
 func getDatesBetween(start time.Time, end time.Time) []time.Time {
 	delta := int(end.Sub(start).Hours())
 	var dates []time.Time
-	dates = append(dates, start)
 	for index := 0; index <= delta; index++ {
 		date, _ := time.Parse("2006-01-02", start.Format("2006-01-02"))
 		date = date.Add(time.Hour * 24 * time.Duration(index))
