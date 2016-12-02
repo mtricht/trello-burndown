@@ -41,7 +41,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 
 2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/swordbeta/trello-burndown/blob/master/config.yaml.default).
 3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
-4. Run it!
+4. Run it! (Check [docker hub](https://hub.docker.com/r/swordbeta/trello-burndown/tags/) for available versions)
 
     ```
     λ docker run -d -p 8080:8080 --volume $(pwd):/root:Z swordbeta/trello-burndown:latest
