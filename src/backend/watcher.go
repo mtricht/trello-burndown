@@ -51,10 +51,11 @@ type action struct {
 }
 
 type cardResult struct {
-	Error    error
-	Date     string
-	Complete bool
-	Points   float64
+	Error       error
+	Date        string
+	Complete    bool
+	Points      float64
+	TrelloError bool
 }
 
 func Start() {
@@ -79,12 +80,16 @@ func runBoards() {
 func Run(boardID string) {
 	log.Printf("Checking board ID #%s", boardID)
 	board, err := getBoard(boardID)
-	board.ID = boardID
-	log.Printf("Board name: %s", board.Name)
-	lastListID := getLastList(board)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	if board == nil {
+		log.Println("Something went wrong requesting a board from Trello.")
+		return
+	}
+	board.ID = boardID
+	log.Printf("Board name: %s", board.Name)
+	lastListID := getLastList(board)
 	resultChannel := make(chan *cardResult)
 	for _, card := range board.Cards {
 		go determineCardComplete(card, lastListID, resultChannel)
@@ -94,6 +99,10 @@ func Run(boardID string) {
 		response := <-resultChannel
 		if response.Error != nil {
 			log.Fatalln(response.Error)
+		}
+		if response.TrelloError {
+			log.Println("Something went wrong requesting a card from Trello.")
+			return
 		}
 		if response.Complete {
 			board.CardsCompleted++
@@ -122,12 +131,15 @@ func getBoard(id string) (*board, error) {
 	resp, err := http.Get(url)
 	defer resp.Body.Close()
 	if err != nil {
-		return &board{}, err
+		return nil, err
+	}
+	if resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
+		return nil, nil
 	}
 	r := new(board)
 	err = json.NewDecoder(resp.Body).Decode(r)
 	if err != nil {
-		return &board{}, err
+		return nil, err
 	}
 	return r, nil
 }
@@ -163,6 +175,12 @@ func determineCardComplete(card card, listID string, res chan *cardResult) {
 	if err != nil {
 		res <- &cardResult{
 			Error: err,
+		}
+		return
+	}
+	if resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
+		res <- &cardResult{
+			TrelloError: true,
 		}
 		return
 	}
