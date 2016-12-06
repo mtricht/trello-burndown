@@ -49,9 +49,7 @@ func saveToDatabase(board *board, m map[string]float64) {
 		CardsCompleted:  board.CardsCompleted,
 		PointsCompleted: board.PointsCompleted,
 	})
-	db.Delete(&CardProgress{
-		BoardID: board.ID,
-	})
+	db.Unscoped().Where("board_id = ?", board.ID).Delete(CardProgress{})
 	pointsInWeekend := 0.0
 	for date, points := range m {
 		date, _ := time.Parse("2006-01-02", date)
