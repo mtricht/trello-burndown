@@ -52,4 +52,10 @@ var serverRoutes = routes{
 		"/delete/{board}",
 		controller.Delete,
 	},
+	route{
+		"Refresh a trello board",
+		[]string{"GET"},
+		"/refresh/{board}",
+		controller.Refresh,
+	},
 }

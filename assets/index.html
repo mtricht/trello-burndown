@@ -20,6 +20,7 @@
         <td>{{ .CardsCompleted }} / {{ .Cards }}</td>
         <td>{{ .PointsCompleted }} / {{ .Points }}</td>
         <td>
+          <a href="{{ $.BaseURL }}refresh/{{ .ID }}"><i class="fa fa-refresh" aria-hidden="true"></i></a>
           <a href="{{ $.BaseURL }}delete/{{ .ID }}"><i class="fa fa-trash" aria-hidden="true"></i></a>
         </td>
       </tr>  
