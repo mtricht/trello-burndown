@@ -49,7 +49,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
     
     Note 1: The config file must be present in the /root directory inside the docker container.
 
-    Note 2: `:Z` is required on systems with SELinux. 
+    Note 2: `:Z` is required on systems with SELinux set to enforcing. 
 
 #### Binary: Setup & Running
 1. Download the latest release from [here](https://github.com/swordbeta/trello-burndown/releases).
