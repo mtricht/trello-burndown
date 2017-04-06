@@ -67,19 +67,19 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 #### Compile from source
 First clone the repository:
 
-    ```
+    
      λ git clone https://github.com/swordbeta/trello-burndown.git
      λ cd trello-burndown
-    ```
+    
 
 To build the docker image:
 
-    ```
+    
      λ make docker
-    ```
+    
 
 Or a binary (tageting linux/386 and linux/amd64):
 
-    ```
+    
      λ make build
-    ```
+    
