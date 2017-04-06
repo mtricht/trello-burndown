@@ -3,7 +3,10 @@
 
 An easy to use SCRUM burndown chart for Trello boards.
 
+### Getting started
 Get quickly up and runnning with the [docker image](#docker-setup--running) or [binary](#binary-setup--running).
+
+Or compile the binary or docker image [from source](#compile-from-source).
 
 ### How it works
 
@@ -61,3 +64,22 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
     λ ./trello-burndown
     ```
     
+#### Compile from source
+First clone the repository:
+
+    ```
+     λ git clone https://github.com/swordbeta/trello-burndown.git
+     λ cd trello-burndown
+    ```
+
+To build the docker image:
+
+    ```
+     λ make docker
+    ```
+
+Or a binary (tageting linux/386 and linux/amd64):
+
+    ```
+     λ make build
+    ```
