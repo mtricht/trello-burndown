@@ -81,7 +81,8 @@ func Run(boardID string) {
 	log.Printf("Checking board ID #%s", boardID)
 	board, err := getBoard(boardID)
 	if err != nil {
-		log.Fatalln(err)
+		log.Printf("Error: %s", err)
+		return
 	}
 	if board == nil {
 		log.Println("Something went wrong requesting a board from Trello.")
@@ -129,10 +130,10 @@ func getBoard(id string) (*board, error) {
 		viper.GetString("trello.userToken"),
 	)
 	resp, err := http.Get(url)
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
 		return nil, nil
 	}
