@@ -43,7 +43,8 @@
       perDay = totalPoints / days.length;
       tempTotal = totalPoints;
       for (i = 0; i < days.length; i++) {
-        estimated[i] = tempTotal - perDay;
+        estimatedTemp = tempTotal - perDay;
+        estimated[i] = estimatedTemp < 0 ? 0 : estimatedTemp;
         tempTotal = tempTotal - perDay;
       }
       return estimated;

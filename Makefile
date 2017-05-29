@@ -11,4 +11,7 @@ bindata:
 docker:
 	docker build --no-cache -t trello-burndown .
 
-.PNONY: install build bindata docker
+run: install
+	trello-burndown
+
+.PNONY: install build bindata docker run
