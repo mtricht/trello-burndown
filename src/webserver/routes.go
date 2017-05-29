@@ -1,9 +1,9 @@
-package frontend
+package webserver
 
 import (
 	"net/http"
 
-	"github.com/swordbeta/trello-burndown/src/frontend/controller"
+	"github.com/swordbeta/trello-burndown/src/webserver/controller"
 )
 
 type route struct {

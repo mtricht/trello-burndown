@@ -7,12 +7,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
-	"github.com/swordbeta/trello-burndown/src/backend"
 	"github.com/swordbeta/trello-burndown/src/util"
+	"github.com/swordbeta/trello-burndown/src/watcher"
 )
 
 type viewPage struct {
-	Board   backend.Board
+	Board   watcher.Board
 	Dates   []time.Time
 	BaseURL string
 }
@@ -28,9 +28,9 @@ func View(w http.ResponseWriter, r *http.Request) {
 
 func getViewPage(r *http.Request) *viewPage {
 	vars := mux.Vars(r)
-	db := backend.GetDatabase()
+	db := watcher.GetDatabase()
 	defer db.Close()
-	board := backend.Board{}
+	board := watcher.Board{}
 	db.Preload("CardProgress", func(db *gorm.DB) *gorm.DB {
 		return db.Order("date ASC")
 	}).Where("id = ?", vars["board"]).First(&board)

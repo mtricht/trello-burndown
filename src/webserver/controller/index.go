@@ -4,19 +4,19 @@ import (
 	"net/http"
 
 	"github.com/spf13/viper"
-	"github.com/swordbeta/trello-burndown/src/backend"
+	"github.com/swordbeta/trello-burndown/src/watcher"
 )
 
 type indexPage struct {
-	Boards  []backend.Board
+	Boards  []watcher.Board
 	BaseURL string
 }
 
 // Index renders the index page.
 func Index(w http.ResponseWriter, r *http.Request) {
-	db := backend.GetDatabase()
+	db := watcher.GetDatabase()
 	defer db.Close()
-	boards := []backend.Board{}
+	boards := []watcher.Board{}
 	db.Order("date_start desc").Find(&boards)
 	indexPage := indexPage{
 		Boards:  boards,

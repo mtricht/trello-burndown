@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/swordbeta/trello-burndown/src/backend"
+	"github.com/swordbeta/trello-burndown/src/watcher"
 )
 
 type addPage struct {
@@ -25,15 +25,15 @@ func AddGet(w http.ResponseWriter, r *http.Request) {
 // AddPost adds the new trello board to the SQLite database!
 func AddPost(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	db := backend.GetDatabase()
+	db := watcher.GetDatabase()
 	defer db.Close()
 	startDate, _ := time.Parse("2006-01-02", r.FormValue("start_date"))
 	endDate, _ := time.Parse("2006-01-02", r.FormValue("end_date"))
-	db.Save(&backend.Board{
+	db.Save(&watcher.Board{
 		ID:        r.FormValue("id"),
 		DateStart: startDate,
 		DateEnd:   endDate,
 	})
-	backend.Run(r.FormValue("id"))
+	watcher.Run(r.FormValue("id"))
 	http.Redirect(w, r, viper.GetString("http.baseURL")+"index", 302)
 }

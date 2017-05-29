@@ -188,7 +188,7 @@ func assetsViewsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/views.go", size: 28672, mode: os.FileMode(420), modTime: time.Unix(1496071753, 0)}
+	info := bindataFileInfo{name: "assets/views.go", size: 28672, mode: os.FileMode(420), modTime: time.Unix(1496072050, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

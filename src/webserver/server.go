@@ -1,4 +1,4 @@
-package frontend
+package webserver
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package backend
+package watcher
 
 import (
 	"encoding/json"
@@ -58,6 +58,8 @@ type cardResult struct {
 	TrelloError bool
 }
 
+// Start starts watching boards that are active. Refreshes according
+// to the refresh rate set in the configuration.
 func Start() {
 	go runBoards()
 	ch := gocron.Start()
@@ -77,6 +79,8 @@ func runBoards() {
 	}
 }
 
+// Run fetches and saves the points of a given board. Called by
+// the watcher and when refreshed on the frontend.
 func Run(boardID string) {
 	log.Printf("Checking board ID #%s", boardID)
 	board, err := getBoard(boardID)
@@ -172,13 +176,13 @@ func determineCardComplete(card card, listID string, res chan *cardResult) {
 		viper.GetString("trello.userToken"),
 	)
 	resp, err := http.Get(url)
-	defer resp.Body.Close()
 	if err != nil {
 		res <- &cardResult{
 			Error: err,
 		}
 		return
 	}
+	defer resp.Body.Close()
 	if resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
 		res <- &cardResult{
 			TrelloError: true,
