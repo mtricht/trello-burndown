@@ -1,15 +1,9 @@
-FROM alpine:3.4
+FROM golang:alpine as builder
+RUN apk add --no-cache git build-base
+RUN go get -v github.com/swordbeta/trello-burndown
 
-RUN apk --no-cache add ca-certificates
-
-# Credits to MailHog
-RUN apk --no-cache add --virtual build-dependencies go git build-base \
-  && mkdir -p /root/gocode \
-  && export GOPATH=/root/gocode \
-  && go get github.com/swordbeta/trello-burndown \
-  && mv /root/gocode/bin/trello-burndown /usr/local/bin \
-  && rm -rf /root/gocode \
-  && apk del --purge build-dependencies build-base
-
+FROM alpine
 WORKDIR /root
-ENTRYPOINT ["trello-burndown"]
+COPY --from=builder /go/bin/trello-burndown /app/trello-burndown
+ENTRYPOINT ["/app/trello-burndown"]
+
