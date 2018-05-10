@@ -1,4 +1,3 @@
-debug: false
 trello:
     apiKey: # See README on how to get the api key
     userToken: # See README on how to get the user token
