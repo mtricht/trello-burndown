@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+// Board contains data of a trello board.
 type Board struct {
 	ID              string `gorm:"primary_key"`
 	Name            string
@@ -20,6 +20,7 @@ type Board struct {
 	CardProgress    []CardProgress
 }
 
+// CardProgress represents the progress of a card.
 type CardProgress struct {
 	gorm.Model
 	BoardID string
@@ -27,6 +28,7 @@ type CardProgress struct {
 	Points  float64
 }
 
+// GetDatabase returns a sqlite3 database connection.
 func GetDatabase() *gorm.DB {
 	db, err := gorm.Open("sqlite3", "./trello.db")
 	if err != nil {
