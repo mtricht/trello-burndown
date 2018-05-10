@@ -1,4 +1,4 @@
-package controller
+package server
 
 import (
 	"net/http"
@@ -7,18 +7,16 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
-	"github.com/swordbeta/trello-burndown/src/util"
-	"github.com/swordbeta/trello-burndown/src/watcher"
+	"github.com/swordbeta/trello-burndown/pkg/trello"
 )
 
 type viewPage struct {
-	Board   watcher.Board
+	Board   trello.Board
 	Dates   []time.Time
 	BaseURL string
 }
 
-// View renders the burndown chart!
-func View(w http.ResponseWriter, r *http.Request) {
+func view(w http.ResponseWriter, r *http.Request) {
 	ViewPage := getViewPage(r)
 	err := templates.ExecuteTemplate(w, "view", ViewPage)
 	if err != nil {
@@ -28,9 +26,9 @@ func View(w http.ResponseWriter, r *http.Request) {
 
 func getViewPage(r *http.Request) *viewPage {
 	vars := mux.Vars(r)
-	db := watcher.GetDatabase()
+	db := trello.GetDatabase()
 	defer db.Close()
-	board := watcher.Board{}
+	board := trello.Board{}
 	db.Preload("CardProgress", func(db *gorm.DB) *gorm.DB {
 		return db.Order("date ASC")
 	}).Where("id = ?", vars["board"]).First(&board)
@@ -48,7 +46,7 @@ func getDatesBetween(start time.Time, end time.Time) []time.Time {
 		date, _ := time.Parse("2006-01-02", start.Format("2006-01-02"))
 		date = date.Add(time.Hour * 24 * time.Duration(index))
 		delta -= 24
-		if util.IsWeekend(date) {
+		if date.Weekday() == time.Saturday || date.Weekday() == time.Sunday {
 			continue
 		}
 		dates = append(dates, date)

@@ -1,22 +1,21 @@
-package controller
+package server
 
 import (
 	"net/http"
 
 	"github.com/spf13/viper"
-	"github.com/swordbeta/trello-burndown/src/watcher"
+	"github.com/swordbeta/trello-burndown/pkg/trello"
 )
 
 type indexPage struct {
-	Boards  []watcher.Board
+	Boards  []trello.Board
 	BaseURL string
 }
 
-// Index renders the index page.
-func Index(w http.ResponseWriter, r *http.Request) {
-	db := watcher.GetDatabase()
+func index(w http.ResponseWriter, r *http.Request) {
+	db := trello.GetDatabase()
 	defer db.Close()
-	boards := []watcher.Board{}
+	boards := []trello.Board{}
 	db.Order("date_start desc").Find(&boards)
 	indexPage := indexPage{
 		Boards:  boards,

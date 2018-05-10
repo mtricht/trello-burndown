@@ -3,7 +3,7 @@ install: bindata
 
 build: bindata
 	go get github.com/mitchellh/gox
-	gox -osarch="linux/amd64" -cgo -output="build/{{.Dir}}_{{.OS}}_{{.Arch}}" .
+	gox -osarch="linux/amd64" -cgo -output="build/trello-burndown_{{.OS}}_{{.Arch}}" ./cmd/
 
 bindata:
 	go-bindata -o assets/views.go -pkg assets assets/...

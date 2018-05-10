@@ -1,4 +1,4 @@
-package watcher
+package trello
 
 import (
 	"encoding/json"
