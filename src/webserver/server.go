@@ -10,7 +10,7 @@ import (
 
 // Start starts the webserver serving the frontend.
 func Start() {
-	log.Printf("Listening on http://127.0.0.1:%s", viper.GetString("http.port"))
+	log.Printf("Listening on :%s, open now: http://127.0.0.1:%s", viper.GetString("http.port"), viper.GetString("http.port"))
 	router := newRouter()
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", viper.GetString("http.port")), router))
 }
