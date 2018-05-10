@@ -26,8 +26,8 @@ type board struct {
 }
 
 type list struct {
-	ID       string `json:"id"`
-	Position int    `json:"pos"`
+	ID       string  `json:"id"`
+	Position float64 `json:"pos"`
 }
 
 type card struct {
@@ -150,7 +150,7 @@ func getBoard(id string) (*board, error) {
 }
 
 func getLastList(board *board) string {
-	var highestPos int
+	var highestPos float64
 	var listID string
 	for _, list := range board.Lists {
 		if list.Position > highestPos {
