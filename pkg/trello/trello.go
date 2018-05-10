@@ -1,54 +1,15 @@
 package trello
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
 	"regexp"
 	"strconv"
 	"time"
 
+	"github.com/adlio/trello"
 	"github.com/jasonlvhit/gocron"
 	"github.com/spf13/viper"
 )
-
-type board struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	URL             string `json:"url"`
-	Lists           []list `json:"lists"`
-	Cards           []card `json:"cards"`
-	CardsCompleted  uint
-	CardsTotal      uint
-	PointsCompleted float64
-	PointsTotal     float64
-}
-
-type list struct {
-	ID       string  `json:"id"`
-	Position float64 `json:"pos"`
-}
-
-type card struct {
-	ID               string `json:"id"`
-	ListID           string `json:"idList"`
-	Name             string `json:"name"`
-	DateLastActivity string `json:"dateLastActivity"`
-	Actions          *[]action
-}
-
-type action struct {
-	Data struct {
-		ListAfter struct {
-			ListID string `json:"id"`
-		}
-		ListBefore struct {
-			ListID string `json:"id"`
-		}
-	}
-	Date string `json:"date"`
-}
 
 type cardResult struct {
 	Error       error
@@ -58,9 +19,15 @@ type cardResult struct {
 	TrelloError bool
 }
 
+var client *trello.Client
+
 // Start starts watching boards that are active. Refreshes according
 // to the refresh rate set in the configuration.
 func Start() {
+	client = trello.NewClient(
+		viper.GetString("trello.apiKey"),
+		viper.GetString("trello.userToken"),
+	)
 	go runBoards()
 	ch := gocron.Start()
 	refreshRate := uint64(viper.GetInt64("trello.refreshRate"))
@@ -71,7 +38,7 @@ func Start() {
 func runBoards() {
 	db := GetDatabase()
 	defer db.Close()
-	boards := []board{}
+	boards := []Board{}
 	yesterday := time.Now().Add(-24 * time.Hour)
 	db.Select("id").Where("date_start < ? AND date_end > ?", yesterday, yesterday).Find(&boards)
 	for _, board := range boards {
@@ -79,141 +46,90 @@ func runBoards() {
 	}
 }
 
-// Run fetches and saves the points of a given board. Called by
-// the watcher and when refreshed on the frontend.
+// Run fetches and saves the points of a given board.
 func Run(boardID string) {
-	log.Printf("Checking board ID #%s", boardID)
-	board, err := getBoard(boardID)
+	log.Printf("Checking board ID %s", boardID)
+	board, err := client.GetBoard(boardID, trello.Defaults())
 	if err != nil {
-		log.Printf("Error: %s", err)
+		log.Printf("Couldn't fetch board: %s", err)
 		return
 	}
-	if board == nil {
-		log.Println("Something went wrong requesting a board from Trello.")
-		return
-	}
-	board.ID = boardID
 	log.Printf("Board name: %s", board.Name)
-	lastListID := getLastList(board)
+	lastListID, err := getLastList(board)
+	if err != nil {
+		log.Printf("Couldn't fetch last list: %s", err)
+	}
 	resultChannel := make(chan *cardResult)
-	for _, card := range board.Cards {
+	cards, err := board.GetCards(trello.Defaults())
+	if err != nil {
+		log.Printf("Couldn't fetch cards: %s", err)
+	}
+	for _, card := range cards {
 		go determineCardComplete(card, lastListID, resultChannel)
 	}
-	var m = make(map[string]float64)
-	for i := 0; i < len(board.Cards); i++ {
+	boardEntity := Board{
+		ID:   boardID,
+		Name: board.Name,
+	}
+	var pointsPerDay = make(map[string]float64)
+	for i := 0; i < len(cards); i++ {
 		response := <-resultChannel
 		if response.Error != nil {
 			log.Fatalln(response.Error)
 		}
-		if response.TrelloError {
-			log.Println("Something went wrong requesting a card from Trello.")
-			return
-		}
 		if response.Complete {
-			board.CardsCompleted++
-			board.PointsCompleted += response.Points
-			if _, ok := m[response.Date]; ok {
-				m[response.Date] = response.Points + m[response.Date]
+			boardEntity.CardsCompleted++
+			boardEntity.PointsCompleted += response.Points
+			if _, ok := pointsPerDay[response.Date]; ok {
+				pointsPerDay[response.Date] = response.Points + pointsPerDay[response.Date]
 			} else {
-				m[response.Date] = response.Points
+				pointsPerDay[response.Date] = response.Points
 			}
 		}
-		board.CardsTotal++
-		board.PointsTotal += response.Points
+		boardEntity.Cards++
+		boardEntity.Points += response.Points
 	}
-	log.Printf("Cards progress: %d/%d", board.CardsCompleted, board.CardsTotal)
-	log.Printf("Total points: %f/%f", board.PointsCompleted, board.PointsTotal)
-	saveToDatabase(board, m)
+	log.Printf("Cards progress: %d/%d", boardEntity.CardsCompleted, boardEntity.Cards)
+	log.Printf("Total points: %f/%f", boardEntity.PointsCompleted, boardEntity.Points)
+	saveToDatabase(boardEntity, pointsPerDay)
 }
 
-func getBoard(id string) (*board, error) {
-	url := fmt.Sprintf(
-		"https://api.trello.com/1/boards/%s?key=%s&token=%s&cards=visible&lists=all",
-		id,
-		viper.GetString("trello.apiKey"),
-		viper.GetString("trello.userToken"),
-	)
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
-		return nil, nil
-	}
-	r := new(board)
-	err = json.NewDecoder(resp.Body).Decode(r)
-	if err != nil {
-		return nil, err
-	}
-	return r, nil
-}
-
-func getLastList(board *board) string {
-	var highestPos float64
+func getLastList(board *trello.Board) (string, error) {
+	var highestPos float32
 	var listID string
-	for _, list := range board.Lists {
-		if list.Position > highestPos {
+	lists, err := board.GetLists(trello.Defaults())
+	if err != nil {
+		return "", err
+	}
+	for _, list := range lists {
+		if list.Pos > highestPos {
 			listID = list.ID
 		}
 	}
-	return listID
+	return listID, nil
 }
 
-func determineCardComplete(card card, listID string, res chan *cardResult) {
-	points := getPoints(&card)
-	if card.ListID != listID {
+func determineCardComplete(card *trello.Card, listID string, res chan *cardResult) {
+	points := getPoints(card)
+	if card.IDList != listID {
 		res <- &cardResult{
 			Complete: false,
 			Points:   points,
 		}
 		return
 	}
-	url := fmt.Sprintf(
-		"https://api.trello.com/1/cards/%s/actions?key=%s&token=%s",
-		card.ID,
-		viper.GetString("trello.apiKey"),
-		viper.GetString("trello.userToken"),
-	)
-	resp, err := http.Get(url)
+	actions, err := card.GetActions(trello.Defaults())
 	if err != nil {
 		res <- &cardResult{
 			Error: err,
 		}
 		return
 	}
-	defer resp.Body.Close()
-	if resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
-		res <- &cardResult{
-			TrelloError: true,
-		}
-		return
-	}
-	var actions []action
-	err = json.NewDecoder(resp.Body).Decode(&actions)
-	if err != nil {
-		res <- &cardResult{
-			Error: err,
-		}
-		return
-	}
-	date, err := time.Parse(time.RFC3339Nano, card.DateLastActivity)
-	if err != nil {
-		res <- &cardResult{
-			Error: err,
-		}
-		return
-	}
+	date := card.DateLastActivity
 	for _, action := range actions {
-		if action.Data.ListAfter.ListID != action.Data.ListBefore.ListID &&
-			action.Data.ListAfter.ListID == listID {
-			date, err = time.Parse(time.RFC3339Nano, action.Date)
-			if err != nil {
-				res <- &cardResult{
-					Error: err,
-				}
-				return
-			}
+		if action.Data.ListAfter != nil && action.Data.ListBefore != nil &&
+			action.Data.ListAfter.ID != action.Data.ListBefore.ID && action.Data.ListAfter.ID == listID {
+			date = &action.Date
 			break
 		}
 	}
@@ -224,7 +140,7 @@ func determineCardComplete(card card, listID string, res chan *cardResult) {
 	}
 }
 
-func getPoints(card *card) float64 {
+func getPoints(card *trello.Card) float64 {
 	r := regexp.MustCompile(`\(([0-9]*\.[0-9]+|[0-9]+)\)`)
 	matches := r.FindStringSubmatch(card.Name)
 	if len(matches) != 2 {

@@ -36,18 +36,12 @@ func GetDatabase() *gorm.DB {
 	return db
 }
 
-func saveToDatabase(board *board, m map[string]float64) {
+func saveToDatabase(board Board, m map[string]float64) {
 	db := GetDatabase()
 	defer db.Close()
 	oldBoard := Board{}
 	db.Where("id = ?", board.ID).First(&oldBoard)
-	db.Model(oldBoard).Updates(&Board{
-		Name:            board.Name,
-		Cards:           board.CardsTotal,
-		Points:          board.PointsTotal,
-		CardsCompleted:  board.CardsCompleted,
-		PointsCompleted: board.PointsCompleted,
-	})
+	db.Model(oldBoard).Updates(&board)
 	db.Unscoped().Where("board_id = ?", board.ID).Delete(CardProgress{})
 	pointsInWeekend := 0.0
 	for date, points := range m {
