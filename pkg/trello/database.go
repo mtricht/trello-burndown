@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/spf13/viper"
 )
 
 // Board contains data of a trello board.
@@ -30,7 +31,7 @@ type CardProgress struct {
 
 // GetDatabase returns a sqlite3 database connection.
 func GetDatabase() *gorm.DB {
-	db, err := gorm.Open("sqlite3", "./trello.db")
+	db, err := gorm.Open(viper.GetString("database.dialect"), viper.GetString("database.url"))
 	if err != nil {
 		log.Fatalln(err)
 	}
