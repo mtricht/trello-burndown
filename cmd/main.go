@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/spf13/viper"
@@ -21,8 +22,10 @@ func init() {
 	viper.SetConfigName("config")
 	err = viper.ReadInConfig()
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
