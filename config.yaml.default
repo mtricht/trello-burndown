@@ -1,7 +1,10 @@
 trello:
     apiKey: # See README on how to get the api key
     userToken: # See README on how to get the user token
-    refreshRate: 30 # minutes
+    refreshRate: 30 # Minutes
+database:
+    dialect: sqlite3 # Currently supported values: sqlite3 or postgres     
+    url: ./trello.db # Example for remote connection: postgresql://user:pass@host:5432/trello?connect_timeout=5
 http:
     port: 8080
     baseURL: http://localhost:8080/ # With trailing slash

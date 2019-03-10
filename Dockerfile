@@ -1,6 +1,9 @@
 FROM golang:alpine as builder
 RUN apk add --no-cache git build-base
-RUN go get -v github.com/swordbeta/trello-burndown/...
+ENV GOBIN=$GOPATH/bin
+COPY . /go
+WORKDIR /go/cmd
+RUN go get -v && go install
 
 FROM alpine
 RUN apk add --no-cache ca-certificates
