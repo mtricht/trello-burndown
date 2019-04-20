@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/spf13/viper"
 	"github.com/mtricht/trello-burndown/pkg/trello"
+	"github.com/spf13/viper"
 )
 
 type addPage struct {
@@ -13,6 +13,10 @@ type addPage struct {
 }
 
 func addGet(w http.ResponseWriter, r *http.Request) {
+	if viper.GetBool("http.readOnly") {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	err := templates.ExecuteTemplate(w, "add", addPage{
 		BaseURL: viper.GetString("http.baseURL"),
 	})
@@ -22,6 +26,10 @@ func addGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func addPost(w http.ResponseWriter, r *http.Request) {
+	if viper.GetBool("http.readOnly") {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	r.ParseForm()
 	db := trello.GetDatabase()
 	defer db.Close()

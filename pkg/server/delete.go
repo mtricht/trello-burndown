@@ -4,11 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/spf13/viper"
 	"github.com/mtricht/trello-burndown/pkg/trello"
+	"github.com/spf13/viper"
 )
 
 func delete(w http.ResponseWriter, r *http.Request) {
+	if viper.GetBool("http.readOnly") {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	vars := mux.Vars(r)
 	db := trello.GetDatabase()
 	defer db.Close()

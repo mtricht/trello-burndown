@@ -8,3 +8,4 @@ database:
 http:
     port: 8080
     baseURL: http://localhost:8080/ # With trailing slash
+    readOnly: false # Disallow any creation or deletion of boards

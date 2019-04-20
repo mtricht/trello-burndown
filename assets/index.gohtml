@@ -1,6 +1,8 @@
 {{ define "index" }}
   {{ template "header" }}
-  <p><a href="{{ .BaseURL }}add"><i class="fa fa-plus"></i> Add trello board</a></p>
+  {{ if not .ReadOnly }}
+    <p><a href="{{ .BaseURL }}add"><i class="fa fa-plus"></i> Add trello board</a></p>
+  {{ end }}
   <table class="table table-bordered table-striped">
     <tr>
       <th></th>
@@ -21,7 +23,9 @@
         <td>{{ .PointsCompleted }} / {{ .Points }}</td>
         <td>
           <a href="{{ $.BaseURL }}refresh/{{ .ID }}"><i class="fa fa-refresh" aria-hidden="true"></i></a>
-          <a href="{{ $.BaseURL }}delete/{{ .ID }}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+          {{ if not $.ReadOnly }}
+            <a href="{{ $.BaseURL }}delete/{{ .ID }}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+          {{ end }}
         </td>
       </tr>  
     {{ end }}
