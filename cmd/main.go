@@ -9,8 +9,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/spf13/viper"
-	"github.com/swordbeta/trello-burndown/pkg/server"
-	"github.com/swordbeta/trello-burndown/pkg/trello"
+	"github.com/mtricht/trello-burndown/pkg/server"
+	"github.com/mtricht/trello-burndown/pkg/trello"
 )
 
 func init() {

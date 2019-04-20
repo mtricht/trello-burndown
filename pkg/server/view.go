@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
-	"github.com/swordbeta/trello-burndown/pkg/trello"
+	"github.com/mtricht/trello-burndown/pkg/trello"
 )
 
 type viewPage struct {

@@ -1,5 +1,5 @@
 # trello-burndown
-[![Go Report Card](https://goreportcard.com/badge/github.com/swordbeta/trello-burndown)](https://goreportcard.com/report/github.com/swordbeta/trello-burndown)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mtricht/trello-burndown)](https://goreportcard.com/report/github.com/mtricht/trello-burndown)
 
 An easy to use SCRUM burndown chart for Trello boards.
 
@@ -42,7 +42,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
     λ mkdir trello-burndown && cd trello-burndown
     ```
 
-2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/swordbeta/trello-burndown/blob/master/config.yaml.default).
+2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/mtricht/trello-burndown/blob/master/config.yaml.default).
 3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
 4. Run it! (Check [docker hub](https://hub.docker.com/r/swordbeta/trello-burndown/tags/) for available versions)
 
@@ -55,8 +55,8 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
     Note 2: `:Z` is required on systems with SELinux set to enforcing. 
 
 #### Binary: Setup & Running
-1. Download the latest release from [here](https://github.com/swordbeta/trello-burndown/releases).
-2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/swordbeta/trello-burndown/blob/master/config.yaml.default).
+1. Download the latest release from [here](https://github.com/mtricht/trello-burndown/releases).
+2. Create a file named `config.yaml` in the same directory, copy the contents from the default [here](https://github.com/mtricht/trello-burndown/blob/master/config.yaml.default).
 3. Edit the configuration file with your favorite editor and set the developer api key and generated token you wrote down earlier.
 4. Run it! You could run this as a daemon with upstart/supervisord/systemd/etc.
 
@@ -68,7 +68,7 @@ Replace "DEVELOPER_API_KEY" with the key you generated in the previous step.
 First clone the repository:
 
     
-     λ git clone https://github.com/swordbeta/trello-burndown.git
+     λ git clone https://github.com/mtricht/trello-burndown.git
      λ cd trello-burndown
     
 
