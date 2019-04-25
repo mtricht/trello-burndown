@@ -78,7 +78,7 @@ To build the docker image:
      λ make docker
     
 
-Or a binary tageting linux/amd64:
+Or a binary targeting linux/amd64:
 
     
      λ make build
