@@ -11,6 +11,7 @@ import (
 // Board contains data of a trello board.
 type Board struct {
 	ID              string `gorm:"primary_key"`
+	Label           string
 	Name            string
 	DateStart       time.Time
 	DateEnd         time.Time
