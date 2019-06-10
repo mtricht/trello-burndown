@@ -8,9 +8,9 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/itsjamie/go-bindata-templates"
-	"github.com/spf13/viper"
+	binhtml "github.com/itsjamie/go-bindata-templates"
 	"github.com/mtricht/trello-burndown/assets"
+	"github.com/spf13/viper"
 )
 
 var templates, err = binhtml.New(assets.Asset, assets.AssetDir).LoadDirectory("assets")
@@ -66,6 +66,12 @@ var serverRoutes = routes{
 		[]string{"GET"},
 		"/refresh/{board}",
 		refresh,
+	},
+	route{
+		"Refresh a trello board with label",
+		[]string{"GET"},
+		"/refresh/{board}/{label}",
+		refreshLabel,
 	},
 }
 

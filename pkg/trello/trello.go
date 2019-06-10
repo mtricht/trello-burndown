@@ -42,12 +42,12 @@ func runBoards() {
 	yesterday := time.Now().Add(-24 * time.Hour)
 	db.Select("id").Where("date_start < ? AND date_end > ?", yesterday, yesterday).Find(&boards)
 	for _, board := range boards {
-		go Run(board.ID)
+		go Run(board.ID, board.Label)
 	}
 }
 
 // Run fetches and saves the points of a given board.
-func Run(boardID string) {
+func Run(boardID string, label string) {
 	log.Printf("Checking board ID %s", boardID)
 	board, err := client.GetBoard(boardID, trello.Defaults())
 	if err != nil {
@@ -64,6 +64,22 @@ func Run(boardID string) {
 	if err != nil {
 		log.Printf("Couldn't fetch cards: %s", err)
 	}
+
+	// Filter only those with matching label
+	index := 0
+	if label != "" {
+		for _, card := range cards {
+			for _, cardLabel := range card.Labels {
+				if cardLabel.Name == label {
+					cards[index] = card
+					index++
+					break
+				}
+			}
+		}
+		cards = cards[:index]
+	}
+
 	for _, card := range cards {
 		go determineCardComplete(card, lastListID, resultChannel)
 	}

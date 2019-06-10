@@ -37,9 +37,10 @@ func addPost(w http.ResponseWriter, r *http.Request) {
 	endDate, _ := time.Parse("2006-01-02", r.FormValue("end_date"))
 	db.Save(&trello.Board{
 		ID:        r.FormValue("id"),
+		Label:     r.FormValue("label"),
 		DateStart: startDate,
 		DateEnd:   endDate,
 	})
-	trello.Run(r.FormValue("id"))
+	trello.Run(r.FormValue("id"), r.FormValue("label"))
 	http.Redirect(w, r, viper.GetString("http.baseURL")+"index", 302)
 }
