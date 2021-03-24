@@ -6,8 +6,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"github.com/muazamkamal/trello-burndown/pkg/trello"
 	"github.com/spf13/viper"
-	"github.com/mtricht/trello-burndown/pkg/trello"
 )
 
 type viewPage struct {

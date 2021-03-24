@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/mtricht/trello-burndown/pkg/trello"
+	"github.com/muazamkamal/trello-burndown/pkg/trello"
 	"github.com/spf13/viper"
 )
 

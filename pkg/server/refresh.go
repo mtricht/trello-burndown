@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/muazamkamal/trello-burndown/pkg/trello"
 	"github.com/spf13/viper"
-	"github.com/mtricht/trello-burndown/pkg/trello"
 )
 
 func refresh(w http.ResponseWriter, r *http.Request) {

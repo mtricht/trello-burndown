@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mtricht/trello-burndown/pkg/trello"
+	"github.com/muazamkamal/trello-burndown/pkg/trello"
 	"github.com/spf13/viper"
 )
 

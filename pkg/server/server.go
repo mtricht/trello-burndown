@@ -9,8 +9,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/itsjamie/go-bindata-templates"
+	"github.com/muazamkamal/trello-burndown/assets"
 	"github.com/spf13/viper"
-	"github.com/mtricht/trello-burndown/assets"
 )
 
 var templates, err = binhtml.New(assets.Asset, assets.AssetDir).LoadDirectory("assets")

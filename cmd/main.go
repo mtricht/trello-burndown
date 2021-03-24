@@ -8,8 +8,8 @@ import (
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/mtricht/trello-burndown/pkg/server"
-	"github.com/mtricht/trello-burndown/pkg/trello"
+	"github.com/muazamkamal/trello-burndown/pkg/server"
+	"github.com/muazamkamal/trello-burndown/pkg/trello"
 	"github.com/spf13/viper"
 )
 
