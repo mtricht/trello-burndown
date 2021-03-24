@@ -19,10 +19,19 @@ type Board struct {
 	CardsCompleted  uint
 	PointsCompleted float64
 	CardProgress    []CardProgress
+	TargetProgress  []TargetProgress
 }
 
 // CardProgress represents the progress of a card.
 type CardProgress struct {
+	gorm.Model
+	BoardID string
+	Date    time.Time
+	Points  float64
+}
+
+// TargetProgress represents the target/total cards.
+type TargetProgress struct {
 	gorm.Model
 	BoardID string
 	Date    time.Time
@@ -35,17 +44,18 @@ func GetDatabase() *gorm.DB {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	db.AutoMigrate(&Board{}, &CardProgress{})
+	db.AutoMigrate(&Board{}, &CardProgress{}, &TargetProgress{})
 	return db
 }
 
-func saveToDatabase(board Board, m map[string]float64) {
+func saveToDatabase(board Board, m map[string]float64, targets map[string]float64) {
 	db := GetDatabase()
 	defer db.Close()
 	oldBoard := Board{}
 	db.Where("id = ?", board.ID).First(&oldBoard)
 	db.Model(oldBoard).Updates(&board)
 	db.Unscoped().Where("board_id = ?", board.ID).Delete(CardProgress{})
+	db.Unscoped().Where("board_id = ?", board.ID).Delete(TargetProgress{})
 	pointsInWeekend := 0.0
 	for date, points := range m {
 		date, _ := time.Parse("2006-01-02", date)
@@ -59,5 +69,14 @@ func saveToDatabase(board Board, m map[string]float64) {
 			BoardID: board.ID,
 		})
 		pointsInWeekend = 0
+	}
+
+	for targetDate, targetPoints := range targets {
+		targetDate, _ := time.Parse("2006-01-02", targetDate)
+		db.Save(&TargetProgress{
+			Date:    targetDate,
+			Points:  targetPoints,
+			BoardID: board.ID,
+		})
 	}
 }

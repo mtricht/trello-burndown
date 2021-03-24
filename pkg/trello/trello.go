@@ -73,7 +73,7 @@ func Run(boardID string) {
 		Name: board.Name,
 	}
 	var pointsPerDay = make(map[string]float64)
-	var targetPerDay = make(map[string]float64)
+	var targetsPerDay = make(map[string]float64)
 	for i := 0; i < len(cards); i++ {
 		response := <-resultChannel
 		if response.Error != nil {
@@ -81,10 +81,10 @@ func Run(boardID string) {
 		}
 
 		// Total points exist in the sprint on each day (regardless of completion)
-		if _, ok := targetPerDay[response.Created]; ok {
-			targetPerDay[response.Created] = response.Points + targetPerDay[response.Created]
+		if _, ok := targetsPerDay[response.Created]; ok {
+			targetsPerDay[response.Created] = response.Points + targetsPerDay[response.Created]
 		} else {
-			targetPerDay[response.Created] = response.Points
+			targetsPerDay[response.Created] = response.Points
 		}
 
 		if response.Complete {
@@ -101,7 +101,7 @@ func Run(boardID string) {
 	}
 	log.Printf("Cards progress: %d/%d", boardEntity.CardsCompleted, boardEntity.Cards)
 	log.Printf("Total points: %f/%f", boardEntity.PointsCompleted, boardEntity.Points)
-	saveToDatabase(boardEntity, pointsPerDay)
+	saveToDatabase(boardEntity, pointsPerDay, targetsPerDay)
 }
 
 func getLastList(board *trello.Board) (string, error) {
