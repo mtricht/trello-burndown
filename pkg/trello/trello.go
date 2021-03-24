@@ -79,6 +79,14 @@ func Run(boardID string) {
 		if response.Error != nil {
 			log.Fatalln(response.Error)
 		}
+
+		// Total points exist in the sprint on each day (regardless of completion)
+		if _, ok := targetPerDay[response.Created]; ok {
+			targetPerDay[response.Created] = response.Points + targetPerDay[response.Created]
+		} else {
+			targetPerDay[response.Created] = response.Points
+		}
+
 		if response.Complete {
 			boardEntity.CardsCompleted++
 			boardEntity.PointsCompleted += response.Points
