@@ -14,6 +14,7 @@ import (
 type cardResult struct {
 	Error       error
 	Date        string
+	Created     string
 	Complete    bool
 	Points      float64
 	TrelloError bool
@@ -65,13 +66,14 @@ func Run(boardID string) {
 		log.Printf("Couldn't fetch cards: %s", err)
 	}
 	for _, card := range cards {
-		go determineCardComplete(card, lastListID, resultChannel)
+		go getCardDetails(card, lastListID, resultChannel)
 	}
 	boardEntity := Board{
 		ID:   boardID,
 		Name: board.Name,
 	}
 	var pointsPerDay = make(map[string]float64)
+	var targetPerDay = make(map[string]float64)
 	for i := 0; i < len(cards); i++ {
 		response := <-resultChannel
 		if response.Error != nil {
@@ -109,11 +111,29 @@ func getLastList(board *trello.Board) (string, error) {
 	return listID, nil
 }
 
-func determineCardComplete(card *trello.Card, listID string, res chan *cardResult) {
+func getCardDetails(card *trello.Card, listID string, res chan *cardResult) {
 	points := getPoints(card)
+
+	// Get action of a card with type "createCard"
+	createdActions, err := card.GetActions(Arguments{"filter": "createCard"})
+	if err != nil {
+		res <- &cardResult{
+			Error: err,
+		}
+		return
+	}
+
+	var dateCreated *time.Time
+
+	// Get date of card creation
+	for _, action := range createdActions {
+		dateCreated = &action.Date
+	}
+
 	if card.IDList != listID {
 		res <- &cardResult{
 			Complete: false,
+			Created:  dateCreated.Format("2006-01-02"),
 			Points:   points,
 		}
 		return
@@ -125,6 +145,7 @@ func determineCardComplete(card *trello.Card, listID string, res chan *cardResul
 		}
 		return
 	}
+
 	date := card.DateLastActivity
 	for _, action := range actions {
 		if action.Data.ListAfter != nil && action.Data.ListBefore != nil &&
@@ -133,9 +154,11 @@ func determineCardComplete(card *trello.Card, listID string, res chan *cardResul
 			break
 		}
 	}
+
 	res <- &cardResult{
 		Complete: true,
 		Date:     date.Format("2006-01-02"),
+		Created:  dateCreated.Format("2006-01-02"),
 		Points:   points,
 	}
 }
