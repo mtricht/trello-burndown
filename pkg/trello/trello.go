@@ -123,7 +123,7 @@ func getCardDetails(card *trello.Card, listID string, res chan *cardResult) {
 	points := getPoints(card)
 
 	// Get action of a card with type "createCard"
-	createdActions, err := card.GetActions(Arguments{"filter": "createCard"})
+	createdActions, err := card.GetActions(trello.Arguments{"filter": "createCard"})
 	if err != nil {
 		res <- &cardResult{
 			Error: err,
